@@ -1,0 +1,150 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+plt.rcParams["font.family"] = "Times New Roman"
+plt.style.use('ggplot')
+
+
+#data
+data1 = pd.read_csv("~/Desktop/ResultsCourse.csv") 
+data2 = pd.read_csv("~/Desktop/ResultsAstro.csv") 
+n1 = len(data1)
+HVI1 = data1['HorizontalVelIn']
+VVI1 = data1['VerticalVelIn']
+SI1 = data1['SpinIn']
+HVO1 = data1['HorizontalVelOut']
+VVO1 = data1['VerticalVelOut']
+SO1 = data1['SpinOut']
+n2 = len(data2)
+HVI2 = data2['HorizontalVelIn']
+VVI2 = data2['VerticalVelIn']
+SI2 = data2['SpinIn']
+HVO2 = data2['HorizontalVelOut']
+VVO2 = data2['VerticalVelOut']
+SO2 = data2['SpinOut']
+
+
+
+
+def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
+    new_cmap = colors.LinearSegmentedColormap.from_list(
+        'trunc({n},{a:.2f},{b:.2f})'.format(n=cmap.name, a=minval, b=maxval),
+        cmap(np.linspace(minval, maxval, n)))
+    return new_cmap
+
+#cmap1 = plt.get_cmap('YlOrRd')
+#cmap2 = plt.get_cmap("BuGn")
+cmap1 = plt.get_cmap('autumn')
+cmap2 = plt.get_cmap("winter")
+lowval = 0.1
+upval = 0.9
+cmapcol1 = truncate_colormap(cmap1, lowval, upval)
+cmapcol2 = truncate_colormap(cmap2, lowval, upval)
+
+size = 30
+fig, ax = plt.subplots(3,3,figsize=(7,7))
+t1 = np.arange(len(HVI1))
+#Column 1 HVI
+im1 = ax[0,0].scatter(HVI1, SO1, s = size, c = t1, cmap = cmapcol1, marker='1', linewidth = 0.3)
+ax[1,0].scatter(HVI1, VVO1, s = size, c = t1, cmap = cmapcol1, marker='1', linewidth = 0.3)
+ax[2,0].scatter(HVI1, HVO1, s = size, c = t1, cmap = cmapcol1, marker='1', linewidth = 0.3)
+
+#Column 2 VVI
+ax[0,1].scatter(VVI1, SO1, s = size, c = t1, cmap = cmapcol1, marker='1', linewidth = 0.3)
+ax[1,1].scatter(VVI1, VVO1, s = size, c = t1, cmap = cmapcol1, marker='1', linewidth = 0.3)
+ax[2,1].scatter(VVI1, HVO1, s = size, c = t1, cmap = cmapcol1, marker='1', linewidth = 0.3)
+
+#Column 3 SI
+ax[0,2].scatter(SI1, SO1, s = size, c = t1, cmap = cmapcol1, marker='1', linewidth = 0.3)
+ax[1,2].scatter(SI1, VVO1, s = size, c = t1, cmap = cmapcol1, marker='1', linewidth = 0.3)
+ax[2,2].scatter(SI1, HVO1, s = size, c = t1, cmap = cmapcol1, marker='1', linewidth = 0.3)
+
+t2 = np.arange(len(HVI2))
+#Column 1 HVI
+im2 = ax[0,0].scatter(HVI2, SO2, s = size, c = t2, cmap = cmapcol2, marker='1', linewidth = 0.3)
+ax[1,0].scatter(HVI2, VVO2, s = size, c = t2, cmap = cmapcol2, marker='1', linewidth = 0.3)
+ax[2,0].scatter(HVI2, HVO2, s = size, c = t2, cmap = cmapcol2, marker='1', linewidth = 0.3)
+
+#Column 2 VVI
+ax[0,1].scatter(VVI2, SO2, s = size, c = t2, cmap = cmapcol2, marker='1', linewidth = 0.3)
+ax[1,1].scatter(VVI2, VVO2, s = size, c = t2, cmap = cmapcol2, marker='1', linewidth = 0.3)
+ax[2,1].scatter(VVI2, HVO2, s = size, c = t2, cmap = cmapcol2, marker='1', linewidth = 0.3)
+
+#Column 3 SI
+ax[0,2].scatter(SI2, SO2, s = size, c = t2, cmap = cmapcol2, marker='1', linewidth = 0.3)
+ax[1,2].scatter(SI2, VVO2, s = size, c = t2, cmap = cmapcol2, marker='1', linewidth = 0.3)
+ax[2,2].scatter(SI2, HVO2, s = size, c = t2, cmap = cmapcol2, marker='1', linewidth = 0.3)
+
+ax[0, 2].set_xticks([])
+ax[0, 2].set_yticks([])
+ax[1, 2].set_xticks([])
+ax[1, 2].set_yticks([])
+ax[0, 1].set_xticks([])
+ax[0, 1].set_yticks([])
+ax[1, 1].set_xticks([])
+ax[1, 1].set_yticks([])
+
+ax[0, 0].set_xticks([])
+ax[1, 0].set_xticks([])
+
+ax[2, 1].set_yticks([])
+ax[2, 2].set_yticks([])
+
+ax[2, 0].set_xticks([0, 10, 20, 30, 40])
+ax[2, 1].set_xticks([-40, -30, -20, -10, 0])
+ax[2, 2].set_xticks([-300, 0, 300, 600, 900])
+ax[0, 0].set_yticks([-800, -400, 0, 400, 800])
+ax[1, 0].set_yticks([0, 5, 10, 15, 20])
+ax[2, 0].set_yticks([0, 5, 10, 15, 20])
+ax[2,0].set(xlabel=r'$\dot{x}$'+" in [m/s]", ylabel=r'$\dot{x}$'+" out [m/s]")
+ax[2,0].tick_params(axis='both', which='major', labelsize=9)
+
+ax[1,0].set(ylabel=r'$\dot{y}$'+" out [m/s]")
+ax[1,0].tick_params(axis='both', which='major', labelsize=9)
+
+ax[0,0].set(ylabel=r'$\dot{\theta}$'+" out [rad/s]")
+ax[0,0].tick_params(axis='both', which='major', labelsize=9)
+
+ax[2,1].set(xlabel=r'$\dot{y}$'+" in [m/s]")
+ax[2,1].tick_params(axis='both', which='major', labelsize=9)
+
+ax[2,2].set(xlabel=r'$\dot{\theta}$'+" in [rad/s]")
+ax[2,2].tick_params(axis='both', which='major', labelsize=9)
+
+
+ax[0,0].set_box_aspect(1)
+ax[0,1].set_box_aspect(1)
+ax[0,2].set_box_aspect(1)
+ax[1,0].set_box_aspect(1)
+ax[1,1].set_box_aspect(1)
+ax[1,2].set_box_aspect(1)
+ax[2,0].set_box_aspect(1)
+ax[2,1].set_box_aspect(1)
+ax[2,2].set_box_aspect(1)
+
+ax[0,0].grid(False)
+ax[0,1].grid(False)
+ax[0,2].grid(False)
+ax[1,0].grid(False)
+ax[1,1].grid(False)
+ax[1,2].grid(False)
+ax[2,0].grid(False)
+ax[2,1].grid(False)
+ax[2,2].grid(False)
+
+plt.subplots_adjust(wspace=0.02, hspace=0.02)
+fig.align_labels()
+
+#adj = 0.025
+adj = 0
+
+cbar_ax1 = fig.add_axes([0.905+adj, 0.48, 0.02, 0.40])
+cbar1 = fig.colorbar(im2, cax=cbar_ax1)
+cbar1.set_label("Campaign A", rotation = 270, labelpad = 9)
+cbar1.set_ticks([])
+cbar_ax2 = fig.add_axes([0.905+adj, 0.11, 0.02, 0.38])
+cbar2 = fig.colorbar(im1, cax=cbar_ax2)
+cbar2.set_label("Campaign B", rotation = 270, labelpad = 9)
+cbar2.set_ticks([])
+    
