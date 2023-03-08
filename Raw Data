@@ -1,9 +1,16 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import matplotlib.colors as colors
-plt.rcParams["font.family"] = "Times New Roman"
 plt.style.use('ggplot')
+plt.rcParams["font.family"] = "Times New Roman"
+COLOR = 'black'
+mpl.rcParams['text.color'] = COLOR
+mpl.rcParams['axes.labelcolor'] = COLOR
+mpl.rcParams['xtick.color'] = COLOR
+mpl.rcParams['ytick.color'] = COLOR
+
 
 
 #data
@@ -141,10 +148,9 @@ adj = 0
 
 cbar_ax1 = fig.add_axes([0.905+adj, 0.48, 0.02, 0.40])
 cbar1 = fig.colorbar(im2, cax=cbar_ax1)
-cbar1.set_label("Campaign A", rotation = 270, labelpad = 9)
+cbar1.set_label("Campaign A", rotation = 270, labelpad = 9.5)
 cbar1.set_ticks([])
 cbar_ax2 = fig.add_axes([0.905+adj, 0.11, 0.02, 0.38])
 cbar2 = fig.colorbar(im1, cax=cbar_ax2)
-cbar2.set_label("Campaign B", rotation = 270, labelpad = 9)
+cbar2.set_label("Campaign B", rotation = 270, labelpad = 9.5)
 cbar2.set_ticks([])
-    
