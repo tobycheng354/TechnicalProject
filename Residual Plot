@@ -1,1 +1,165 @@
+import math
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
+import statistics
+plt.rcParams["font.family"] = "Times New Roman"
+plt.style.use('ggplot')
 
+#data
+data1 = pd.read_csv("~/Desktop/ResultsAstro.csv")
+HVI1 = data1['HorizontalVelIn']
+VVI1 = data1['VerticalVelIn']
+SI1 = data1['SpinIn']
+HVO1 = data1['HorizontalVelOut']
+VVO1 = data1['VerticalVelOut']
+SO1 = data1['SpinOut']
+n1 = len(data1)
+
+data2 = pd.read_csv("~/Desktop/ResultsCourse.csv")
+HVI2 = data2['HorizontalVelIn']
+VVI2 = data2['VerticalVelIn']
+SI2 = data2['SpinIn']
+HVO2 = data2['HorizontalVelOut']
+VVO2 = data2['VerticalVelOut']
+SO2 = data2['SpinOut']
+n2 = len(data2)
+
+#ASTRO
+#setup
+output_x_velocities1 = []
+output_y_velocities1 = []
+output_a_velocities1 = []
+r = 0.0202
+for i in range(0, n1):
+    #inputs
+    ix = HVI1[i]
+    iy = VVI1[i]
+    iw = SI1[i]
+    vel = (math.sqrt((HVI1[i]*HVI1[i]) + (VVI1[i]*VVI1[i])))
+    vel_dir = math.atan(VVI1[i]/HVI1[i])
+    
+    ang = 6.868897419854141262e+00 * vel_dir * vel_dir + 2.560211296095917533e+01 * vel_dir + 3.241682870516302728e+01
+    e = -3.296131337405492912e-01 * vel_dir + 9.525887488395337610e-02
+    mu = 0.148
+    
+    #convert
+    theta = math.radians(ang)
+    ixdash = (ix * math.cos(theta)) - (abs(iy) * math.sin(theta))
+    iydash = (ix * math.sin(theta)) + (abs(iy) * math.cos(theta))
+
+    #slip/roll
+    mu_c = (2*(ixdash + (r*iw)))/(7*(1+e)*(iydash))  
+    if mu <= mu_c: #bounce
+        rxdash = ixdash - ((mu * abs(iydash))*(1+e))
+        rydash = e * abs(iydash)
+        rw = iw - (((5*mu)/(2*r))*(abs(iydash))*(1+e))
+    else: #roll
+        rxdash = ((5/7)*ixdash) - ((2/7)*r*iw)
+        rydash = e*abs(iydash)
+        rw = -rxdash/r
+    
+    #output
+    rx = (rxdash * math.cos(theta)) - (rydash * math.sin(theta))
+    ry = (rxdash * math.sin(theta)) + (rydash * math.cos(theta))
+    output_x_velocities1.append(rx)
+    output_y_velocities1.append(ry)
+    output_a_velocities1.append(rw)
+
+
+#COURSE
+#setup
+output_x_velocities2 = []
+output_y_velocities2 = []
+output_a_velocities2 = []
+r = 0.0202
+for i in range(0, n2):
+    #inputs
+    ix = HVI2[i]
+    iy = VVI2[i]
+    iw = SI2[i]
+    vel = (math.sqrt((HVI2[i]*HVI2[i]) + (VVI2[i]*VVI2[i])))
+    vel_dir = math.atan(VVI2[i]/HVI2[i])
+    
+    ang = 7.833226275965229357e-01 * HVI2[i] + 5.395187520086353494e+00
+    mu = 0.281
+    e = -8.910544728940832451e-03 * HVI2[i] + 3.019853429438483228e-01
+    
+    #convert
+    theta = math.radians(ang)
+    ixdash = (ix * math.cos(theta)) - (abs(iy) * math.sin(theta))
+    iydash = (ix * math.sin(theta)) + (abs(iy) * math.cos(theta))
+
+    #slip/roll
+    mu_c = (2*(ixdash + (r*iw)))/(7*(1+e)*(iydash))  
+    if mu <= mu_c: #bounce
+        rxdash = ixdash - ((mu * abs(iydash))*(1+e))
+        rydash = e * abs(iydash)
+        rw = iw - (((5*mu)/(2*r))*(abs(iydash))*(1+e))
+    else: #roll
+        rxdash = ((5/7)*ixdash) - ((2/7)*r*iw)
+        rydash = e*abs(iydash)
+        rw = -rxdash/r
+    
+    #output
+    rx = (rxdash * math.cos(theta)) - (rydash * math.sin(theta))
+    ry = (rxdash * math.sin(theta)) + (rydash * math.cos(theta))
+    output_x_velocities2.append(rx)
+    output_y_velocities2.append(ry)
+    output_a_velocities2.append(rw)
+
+MSD_x1 = mean_squared_error(HVO1, output_x_velocities1, squared = False)/abs(statistics.mean(HVO1))
+MSD_y1 = mean_squared_error(VVO1, output_y_velocities1, squared = False)/abs(statistics.mean(VVO1))
+MSD_a1 = mean_squared_error(SO1, output_a_velocities1, squared = False)/abs(statistics.mean(SO1))
+print(MSD_x1, MSD_y1, MSD_a1)
+
+r2_x1 = r2_score(HVO1,output_x_velocities1) * 100
+r2_y1 = r2_score(VVO1,output_y_velocities1) * 100
+r2_a1 = r2_score(SO1,output_a_velocities1) * 100
+print(r2_x1, r2_y1, r2_a1)
+
+MSD_x2 = mean_squared_error(HVO2, output_x_velocities2, squared = False)/abs(statistics.mean(HVO2))
+MSD_y2 = mean_squared_error(VVO2, output_y_velocities2, squared = False)/abs(statistics.mean(VVO2))
+MSD_a2 = mean_squared_error(SO2, output_a_velocities2, squared = False)/abs(statistics.mean(SO2))
+print(MSD_x2, MSD_y2, MSD_a2)
+
+r2_x2 = r2_score(HVO2,output_x_velocities2) * 100
+r2_y2 = r2_score(VVO2,output_y_velocities2) * 100
+r2_a2 = r2_score(SO2,output_a_velocities2) * 100
+print(r2_x2, r2_y2, r2_a2)
+
+col1 = "tab:blue"
+col2 = "tab:orange"
+dot_size = 16
+
+fig, axs = plt.subplots(1,3,figsize=(15, 15))
+axs[0].scatter(HVO1, output_x_velocities1, s = dot_size, marker = '.', color = col1, label = "Astro")
+axs[0].scatter(HVO2, output_x_velocities2, s = dot_size, marker = '.', color = col2, label = "Course")
+axs[0].plot(np.arange(-3, max(HVO1)), np.arange(-3, max(HVO1)), "--", color ='black', linewidth = 1)
+axs[0].set(ylabel = "True Value")
+axs[0].set_box_aspect(1)
+axs[0].legend()
+axs[0].annotate("R2 score: "+str(r2_x1), [10, 0], color = col1, fontsize = 8)
+axs[0].annotate("R2 score: "+str(r2_x2), [10, -1], color = col2, fontsize = 8)
+axs[0].title.set_text(r"$\dot{x}$")
+
+axs[1].scatter(VVO1, output_y_velocities1, s = dot_size, marker = '.', color = col1)
+axs[1].scatter(VVO2, output_y_velocities2, s = dot_size, marker = '.', color = col2)
+axs[1].plot(np.arange(0, max(VVO1)), np.arange(0, max(VVO1)), "--", color ='black', linewidth = 1)
+axs[1].set(xlabel = "Predictions")
+axs[1].set_box_aspect(1)
+axs[1].annotate("R2 score: "+str(r2_y1), [10, 2], color = col1, fontsize = 8)
+axs[1].annotate("R2 score: "+str(r2_y2), [10, 1], color = col2, fontsize = 8)
+axs[1].title.set_text(r"$\dot{y}$")
+    
+axs[2].scatter(SO1, output_a_velocities1, s = dot_size, marker = '.', color = col1)
+axs[2].scatter(SO2, output_a_velocities2, s = dot_size, marker = '.', color = col2)
+axs[2].plot(np.arange(min(SO1), max(SO1)), np.arange(min(SO1), max(SO1)), "--", color ='black', linewidth = 1)
+axs[2].set_box_aspect(1)
+axs[2].annotate("R2 score: "+str(r2_a1), [0, -800], color = col1, fontsize = 8)
+axs[2].annotate("R2 score: "+str(r2_a2), [0, -870], color = col2, fontsize = 8)
+axs[2].title.set_text(r"$\dot{\theta}$")
+
+plt.subplots_adjust(wspace=0.15, hspace=0)
