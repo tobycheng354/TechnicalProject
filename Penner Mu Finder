@@ -149,7 +149,11 @@ stemline1a = axs[0].stem(mu_min_astro, min_val_astro, linefmt = "darkgrey",  mar
 stemline2a = axs[0].stem(min_val_astro, mu_min_astro, linefmt = "darkgrey",  markerfmt=" ", orientation = 'horizontal')
 plt.setp(stemline1a, 'linestyle', 'dashed')
 plt.setp(stemline2a, 'linestyle', 'dashed')
-axs[0].plot(mu_vals, errors_astro)
+axs[0].plot(mu_vals, errors_astro, linewidth = 2)
+axs[0].title.set_text(r'$(a)$')
+axs[0].xaxis.label.set(fontsize=14)
+axs[0].yaxis.label.set(fontsize=14)
+axs[0].tick_params(axis='both', which='major', labelsize=11)
 
 
 axs[1].set_box_aspect(1)
@@ -162,4 +166,8 @@ stemline1c = axs[1].stem(mu_min_course, min_val_course, linefmt = "darkgrey",  m
 stemline2c = axs[1].stem(min_val_course, mu_min_course, linefmt = "darkgrey",  markerfmt=" ", orientation = 'horizontal')
 plt.setp(stemline1c, 'linestyle', 'dashed')
 plt.setp(stemline2c, 'linestyle', 'dashed')
-axs[1].plot(mu_vals, errors_course)
+axs[1].plot(mu_vals, errors_course, linewidth = 2)
+axs[1].title.set_text(r'$(b)$')
+axs[1].xaxis.label.set(fontsize=14)
+axs[1].yaxis.label.set(fontsize=14)
+axs[1].tick_params(axis='both', which='major', labelsize=11)
