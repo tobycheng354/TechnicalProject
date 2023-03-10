@@ -4,10 +4,18 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import math
 import random
-from matplotlib import cm
+import matplotlib as mpl
 from matplotlib.legend_handler import HandlerTuple
-plt.rcParams["font.family"] = "Times New Roman"
+rc = {"font.family" : "serif", 
+      "mathtext.fontset" : "stix"}
+plt.rcParams.update(rc)
+plt.rcParams["font.serif"] = ["Times New Roman"] + plt.rcParams["font.serif"]
 plt.style.use('ggplot')
+COLOR = 'black'
+mpl.rcParams['text.color'] = COLOR
+mpl.rcParams['axes.labelcolor'] = COLOR
+mpl.rcParams['xtick.color'] = COLOR
+mpl.rcParams['ytick.color'] = COLOR
 
 #data
 data1 = pd.read_csv("~/Desktop/ResultsAstro.csv") #MUST CHANGE LOCATION FURTHER DOWN AS WELL
@@ -149,6 +157,8 @@ axs[0].set_box_aspect(1)
 #this will change depending on plot
 axs[0].set_xlim([-2, 3])
 axs[0].set_ylim([-0.5, 5])
+axs[0].grid(False)
+axs[0].title.set_text(r'$(a)$')
 
 
 
@@ -190,6 +200,8 @@ axs[1].set_box_aspect(1)
 #this will change depending on plot
 axs[1].set_xlim([-2, 3])
 axs[1].set_ylim([-0.5, 5])
+axs[1].grid(False)
+axs[1].title.set_text(r'$(b)$')
 
 #legend
 handles, labels = axs[1].get_legend_handles_labels()
