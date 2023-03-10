@@ -7,6 +7,7 @@ import matplotlib as mpl
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 import statistics
+import matplotlib.colors as colors
 rc = {"font.family" : "serif", 
       "mathtext.fontset" : "stix"}
 plt.rcParams.update(rc)
@@ -111,19 +112,19 @@ ax[2, 2].set_xticks([-300, 0, 300, 600, 900])
 ax[0, 0].set_yticks([-800, -400, 0, 400, 800])
 ax[1, 0].set_yticks([0, 5, 10, 15, 20])
 ax[2, 0].set_yticks([0, 5, 10, 15, 20])
-ax[2,0].set(xlabel=r'$\dot{x}$'+" in [m/s]", ylabel=r'$\dot{x}$'+" out [m/s]")
+ax[2,0].set(xlabel=r'$\dot{x}_{in}$'+" "+r"$(m\;s^{-1})$", ylabel=r'$\dot{x}_{out}$'+" " +r"$(m\;s^{-1})$")
 ax[2,0].tick_params(axis='both', which='major', labelsize=9)
 
-ax[1,0].set(ylabel=r'$\dot{y}$'+" out [m/s]")
+ax[1,0].set(ylabel=r'$\dot{y}_{out}$'+" " +r"$(m\;s^{-1})$")
 ax[1,0].tick_params(axis='both', which='major', labelsize=9)
 
-ax[0,0].set(ylabel=r'$\dot{\theta}$'+" out [rad/s]")
+ax[0,0].set(ylabel=r'$\dot{\theta}_{out}$'+" " +r"$(rad\;s^{-1})$")
 ax[0,0].tick_params(axis='both', which='major', labelsize=9)
 
-ax[2,1].set(xlabel=r'$\dot{y}$'+" in [m/s]")
+ax[2,1].set(xlabel=r'$\dot{y}_{in}$'+" " +r"$(m\;s^{-1})$")
 ax[2,1].tick_params(axis='both', which='major', labelsize=9)
 
-ax[2,2].set(xlabel=r'$\dot{\theta}$'+" in [rad/s]")
+ax[2,2].set(xlabel=r'$\dot{\theta}_{in}$'+" " +r"$(rad\;s^{-1})$")
 ax[2,2].tick_params(axis='both', which='major', labelsize=9)
 
 
@@ -161,3 +162,4 @@ cbar_ax2 = fig.add_axes([0.905+adj, 0.11, 0.02, 0.38])
 cbar2 = fig.colorbar(im1, cax=cbar_ax2)
 cbar2.set_label("Campaign B", rotation = 270, labelpad = 9.5)
 cbar2.set_ticks([])
+
