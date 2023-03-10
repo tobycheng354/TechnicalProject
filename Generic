@@ -1,0 +1,96 @@
+#setups
+#imports and setup
+import numpy  as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import math
+import random
+import matplotlib as mpl
+from matplotlib.legend_handler import HandlerTuple
+rc = {"font.family" : "serif", 
+      "mathtext.fontset" : "stix"}
+plt.rcParams.update(rc)
+plt.rcParams["font.serif"] = ["Times New Roman"] + plt.rcParams["font.serif"]
+plt.style.use('ggplot')
+COLOR = 'black'
+mpl.rcParams['text.color'] = COLOR
+mpl.rcParams['axes.labelcolor'] = COLOR
+mpl.rcParams['xtick.color'] = COLOR
+mpl.rcParams['ytick.color'] = COLOR
+
+#data
+data1 = pd.read_csv("~/Desktop/ResultsAstro.csv") #MUST CHANGE LOCATION FURTHER DOWN AS WELL
+n1 = len(data1)
+HVI1 = data1['HorizontalVelIn']
+VVI1 = data1['VerticalVelIn']
+SI1 = data1['SpinIn']
+HVO1 = data1['HorizontalVelOut']
+VVO1 = data1['VerticalVelOut']
+SO1 = data1['SpinOut']
+
+data2 = pd.read_csv("~/Desktop/ResultsCourse.csv") #MUST CHANGE LOCATION FURTHER DOWN AS WELL
+n2 = len(data2)
+HVI2 = data2['HorizontalVelIn']
+VVI2 = data2['VerticalVelIn']
+SI2 = data2['SpinIn']
+HVO2 = data2['HorizontalVelOut']
+VVO2 = data2['VerticalVelOut']
+SO2 = data2['SpinOut']
+
+#NRMSD
+MSD_x1 = mean_squared_error(HVO1, output_x_velocities1, squared = False)/abs(statistics.mean(HVO1))
+MSD_y1 = mean_squared_error(VVO1, output_y_velocities1, squared = False)/abs(statistics.mean(VVO1))
+MSD_a1 = mean_squared_error(SO1, output_a_velocities1, squared = False)/abs(statistics.mean(SO1))
+print(MSD_x1, MSD_y1, MSD_a1)
+
+
+MSD_x2 = mean_squared_error(HVO2, output_x_velocities2, squared = False)/abs(statistics.mean(HVO2))
+MSD_y2 = mean_squared_error(VVO2, output_y_velocities2, squared = False)/abs(statistics.mean(VVO2))
+MSD_a2 = mean_squared_error(SO2, output_a_velocities2, squared = False)/abs(statistics.mean(SO2))
+print(MSD_x2, MSD_y2, MSD_a2)
+
+
+#list of equations for course
+
+#quadratic
+    ang = 9.127050749468854432e-03 * HVI[i] * HVI[i] + 4.724733598319191263e-01 * HVI[i] + 7.423025399253922352e+00
+    mu =-7.047837003923600509e-08 * SI[i] * SI[i] + 2.616465836343113255e-04 * SI[i] + 1.301641631811014110e-01
+    e = 2.257446476455100012e-04 * HVI[i] * HVI[i] -1.659896022575053920e-02 * HVI[i] + 3.521410350814799251e-01
+
+#linear
+    ang = 7.833226275965229357e-01 * HVI[i] + 5.395187520086353494e+00
+    mu = 2.098165787758798006e-04 * SI[i] + 1.312575526968308148e-01
+    e = -8.910544728940832451e-03 * HVI[i] + 3.019853429438483228e-01
+
+#list of equations for astro
+
+#quadratic 
+    e =  -5.416433593653573464e-01 * vel_dir * vel_dir -1.237837261494148855e+00 * vel_dir - 2.454030410960500730e-01
+    ang = 6.868897419854141262e+00 * vel_dir * vel_dir + 2.560211296095917533e+01 * vel_dir + 3.241682870516302728e+01
+    mu = -1.017345486881720427e-07 * SI[i] * SI[i] + 2.124144400934726402e-04 * SI[i] + 1.047486689816780059e-01
+    
+    #linear
+    e = -3.296131337405492912e-01 * vel_dir + 9.525887488395337610e-02
+    ang = 1.408438961051394855e+01 * vel_dir + 2.809669495800632433e+01
+    mu = 1.535475181197490618e-04 * SI[i] + 9.684562071549471240e-02
+    
+#optimal astro
+ang = 6.868897419854141262e+00 * vel_dir * vel_dir + 2.560211296095917533e+01 * vel_dir + 3.241682870516302728e+01
+e = -3.296131337405492912e-01 * vel_dir + 9.525887488395337610e-02
+mu = 0.148
+
+#optimal course
+ang = 7.833226275965229357e-01 * HVI[i] + 5.395187520086353494e+00
+mu = 0.281
+e = -8.910544728940832451e-03 * HVI[i] + 3.019853429438483228e-01
+
+#penner original
+if abs(iy) <= 20:
+    e = 0.510 - (0.0375 * abs(iydash)) + (0.000903 * abs(iydash) * abs(iydash))
+else:
+    e = 0.120
+    
+ang = 15.4 * (vel / 18.6)  * (math.degrees(vel_dir) / 44.4)
+
+mu_min_astro = 0.6464646464646465
+mu_min_course = 0.5555555555555556
