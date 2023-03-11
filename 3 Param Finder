@@ -1,0 +1,146 @@
+import math
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import rc
+import matplotlib as mpl
+from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
+import statistics
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator
+rc = {"font.family" : "serif", 
+      "mathtext.fontset" : "stix"}
+plt.rcParams.update(rc)
+plt.rcParams["font.serif"] = ["Times New Roman"] + plt.rcParams["font.serif"]
+plt.style.use('default')
+COLOR = 'black'
+mpl.rcParams['text.color'] = COLOR
+mpl.rcParams['axes.labelcolor'] = COLOR
+mpl.rcParams['xtick.color'] = COLOR
+mpl.rcParams['ytick.color'] = COLOR
+
+
+#DATA
+data = pd.read_csv("~/Desktop/ResultsCourse.csv")
+n = len(data)
+HVI = data['HorizontalVelIn']
+VVI = data['VerticalVelIn']
+SI = data['SpinIn']
+HVO = data['HorizontalVelOut']
+VVO = data['VerticalVelOut']
+SO = data['SpinOut']
+
+#setup
+r = 0.0202
+
+def bounce(ix, iy, iw, ang, mu, e):
+    theta = math.radians(ang)
+    ixdash = (ix * math.cos(theta)) - (abs(iy) * math.sin(theta))
+    iydash = (ix * math.sin(theta)) + (abs(iy) * math.cos(theta))
+    mu_c = (2*(ixdash + (r*iw)))/(7*(1+e)*(iydash))  
+    if mu <= mu_c: #bounce
+        rxdash = ixdash - ((mu * abs(iydash))*(1+e))
+        rydash = e * abs(iydash)
+        rw = iw - (((5*mu)/(2*r))*(abs(iydash))*(1+e))
+    else: #roll
+        rxdash = ((5/7)*ixdash) - ((2/7)*r*iw)
+        rydash = e*abs(iydash)
+        rw = -rxdash/r
+    rx = (rxdash * math.cos(theta)) - (rydash * math.sin(theta))
+    ry = (rxdash * math.sin(theta)) + (rydash * math.cos(theta))
+    return(rx, ry, rw)
+
+
+angles = np.linspace(10, 40, 40)
+mus = np.linspace(0, 1, 40)
+es = np.linspace(0, 1, 40)
+errors = np.zeros([len(angles), len(mus), len(es)])
+A_ang = np.zeros([len(mus), len(es)])
+
+
+x = -1
+for mu in mus:
+    x += 1
+    print(x)
+    y = -1
+    for e in es:
+        y += 1
+        print(y)
+        z = -1
+        A_err = []
+        for angle in angles:
+            #MAIN ERROR
+            z += 1
+            output_x_velocities = []
+            output_y_velocities = []
+            output_a_velocities = []
+            for i in range(0, n):
+                #main
+                ix = HVI[i]
+                iy = VVI[i]
+                iw = SI[i]
+                theta = math.radians(angle)
+                ixdash = (ix * math.cos(theta)) - (abs(iy) * math.sin(theta))
+                iydash = (ix * math.sin(theta)) + (abs(iy) * math.cos(theta))
+                mu_c = (2*(ixdash + (r*iw)))/(7*(1+e)*(iydash))  
+                if mu <= mu_c: #bounce
+                    rxdash = ixdash - ((mu * abs(iydash))*(1+e))
+                    rydash = e * abs(iydash)
+                    rw = iw - (((5*mu)/(2*r))*(abs(iydash))*(1+e))
+                else: #roll
+                    rxdash = ((5/7)*ixdash) - ((2/7)*r*iw)
+                    rydash = e*abs(iydash)
+                    rw = -rxdash/r
+                rx = (rxdash * math.cos(theta)) - (rydash * math.sin(theta))
+                ry = (rxdash * math.sin(theta)) + (rydash * math.cos(theta))
+                output_x_velocities.append(rx)
+                output_y_velocities.append(ry)
+                output_a_velocities.append(rw)
+            
+            #NRMSD
+            MSD_x = mean_squared_error(HVO, output_x_velocities, squared = False)/abs(statistics.mean(HVO))
+            MSD_y = mean_squared_error(VVO, output_y_velocities, squared = False)/abs(statistics.mean(VVO))
+            MSD_a = mean_squared_error(SO, output_a_velocities, squared = False)/abs(statistics.mean(SO))
+            total_MSD = MSD_x + MSD_y + MSD_a
+            errors[z][x][y] = total_MSD
+            A_err.append(total_MSD)
+        #ANGLES
+        A_min = angles[np.argmin(A_err)]
+        A_ang[x][y] = A_min
+        
+        
+
+min_idx = np.unravel_index(errors.argmin(), errors.shape)
+mu_final = (mus[min_idx[1]])
+e_final = (es[min_idx[2]])
+ang_final = (angles[min_idx[0]])
+
+print(ang_final, mu_final, e_final)
+
+
+V = errors.min(axis = 0)
+
+X, Y = np.meshgrid(es, mus)
+Z = A_ang
+
+color_dimension = V # change to desired fourth dimension
+minn, maxx = color_dimension.min(), color_dimension.max()
+norm = mpl.colors.Normalize(minn, maxx)
+m = plt.cm.ScalarMappable(norm=norm, cmap='plasma_r')
+m.set_array([])
+fcolors = m.to_rgba(color_dimension)
+
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(X,Y,Z, rstride=1, cstride=1, facecolors=fcolors, vmin=minn, vmax=maxx, shade=False)
+ax.set_xlabel(r'$e$')
+ax.set_ylabel(r'$\mu$')
+ax.set_zlabel(r'$\theta$')
+ax.view_init(elev=22.5, azim=45, roll=0)
+ax.set_aspect('auto')
+ax.set_xlim([0, 1])
+ax.set_ylim([0, 1])
+ax.set_zlim([10, 40])
+fig.canvas.show()
