@@ -1,0 +1,57 @@
+import math
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import rc
+import matplotlib as mpl
+from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
+import statistics
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator
+plt.style.use('default')
+rc = {"font.family" : "serif", 
+      "mathtext.fontset" : "stix"}
+plt.rcParams.update(rc)
+plt.rcParams["font.serif"] = ["Times New Roman"] + plt.rcParams["font.serif"]
+COLOR = 'black'
+mpl.rcParams['text.color'] = COLOR
+mpl.rcParams['axes.labelcolor'] = COLOR
+mpl.rcParams['xtick.color'] = COLOR
+mpl.rcParams['ytick.color'] = COLOR
+
+V = np.load("/Users/TobyCheng/Desktop/V.npy")
+Z = np.load("/Users/TobyCheng/Desktop/Z.npy")
+
+angles = np.linspace(10, 40, 100)
+mus = np.linspace(0, 1, 100)
+es = np.linspace(0, 1, 100)
+
+X, Y = np.meshgrid(es, mus)
+
+mpl.rcParams.update({"axes.grid" : True, "grid.color": "lightgrey"})
+#colormap = 'twilight'
+colormap = 'gnuplot2_r'
+color_dimension = V # change to desired fourth dimension
+minn, maxx = color_dimension.min(), color_dimension.max()
+norm = mpl.colors.Normalize(minn, maxx)
+m = plt.cm.ScalarMappable(norm=norm, cmap=colormap)
+m.set_array([])
+fcolors = m.to_rgba(color_dimension)
+
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(X,Y,Z, rstride=1, cstride=1, facecolors=fcolors, vmin=minn, vmax=maxx, shade=False)
+ax.zaxis.set_rotate_label(False)
+
+ax.set_xlabel("Coefficient of Restitution ("+r'$e$)')
+ax.set_ylabel("Coefficient of Fridction ("+r'$\mu$)')
+ax.set_zlabel("Angle of Turf ("+r'$\theta_c$)', rotation = 90)
+ax.view_init(elev=22.5, azim=45, roll=0)
+ax.set_aspect('auto')
+ax.set_xlim([0, 1])
+ax.set_ylim([0, 1])
+ax.set_zlim([10, 40])
+
+fig.canvas.show()
