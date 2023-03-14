@@ -8,11 +8,11 @@ from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 import statistics
 import matplotlib.colors as colors
+plt.style.use('default')
 rc = {"font.family" : "serif", 
       "mathtext.fontset" : "stix"}
 plt.rcParams.update(rc)
 plt.rcParams["font.serif"] = ["Times New Roman"] + plt.rcParams["font.serif"]
-plt.style.use('ggplot')
 COLOR = 'black'
 mpl.rcParams['text.color'] = COLOR
 mpl.rcParams['axes.labelcolor'] = COLOR
