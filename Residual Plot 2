@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 import matplotlib as mpl
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 import statistics
 import matplotlib.colors as colors
 plt.style.use('default')
@@ -130,17 +131,6 @@ for i in range(0, n2):
     output_y_velocities2.append(ry)
     output_a_velocities2.append(rw)
 
-MSD_x1 = mean_squared_error(HVO1, output_x_velocities1, squared = False)/abs(statistics.mean(HVO1))
-MSD_y1 = mean_squared_error(VVO1, output_y_velocities1, squared = False)/abs(statistics.mean(VVO1))
-MSD_a1 = mean_squared_error(SO1, output_a_velocities1, squared = False)/abs(statistics.mean(SO1))
-print(MSD_x1, MSD_y1, MSD_a1)
-
-
-MSD_x2 = mean_squared_error(HVO2, output_x_velocities2, squared = False)/abs(statistics.mean(HVO2))
-MSD_y2 = mean_squared_error(VVO2, output_y_velocities2, squared = False)/abs(statistics.mean(VVO2))
-MSD_a2 = mean_squared_error(SO2, output_a_velocities2, squared = False)/abs(statistics.mean(SO2))
-print(MSD_x2, MSD_y2, MSD_a2)
-
 
 
 
@@ -176,13 +166,13 @@ def line_of_best_fit(trueval, pred, minval, maxval):
     X = np.arange(minval, maxval)
     for x in X:
         line.append((c[0]*x)+c[1])
-    return X, line
-x1, lx1 = line_of_best_fit(HVO1,output_x_velocities1, min_val_x, max_val_x)
-x2, lx2 = line_of_best_fit(HVO2,output_x_velocities2, min_val_x, max_val_x)
-y1, ly1 = line_of_best_fit(VVO1,output_y_velocities1, min_val_y, max_val_y)
-y2, ly2 = line_of_best_fit(VVO2,output_y_velocities2, min_val_y, max_val_y)
-a1, la1 = line_of_best_fit(SO1,output_a_velocities1, min_val_a, max_val_a)
-a2, la2 = line_of_best_fit(SO2,output_a_velocities2, min_val_a, max_val_a)
+    return X, line, c
+x1, lx1, cx1 = line_of_best_fit(HVO1,output_x_velocities1, min_val_x, max_val_x)
+x2, lx2, cx2 = line_of_best_fit(HVO2,output_x_velocities2, min_val_x, max_val_x)
+y1, ly1, cy1 = line_of_best_fit(VVO1,output_y_velocities1, min_val_y, max_val_y)
+y2, ly2, cy2 = line_of_best_fit(VVO2,output_y_velocities2, min_val_y, max_val_y)
+a1, la1, ca1 = line_of_best_fit(SO1,output_a_velocities1, min_val_a, max_val_a)
+a2, la2, ca2 = line_of_best_fit(SO2,output_a_velocities2, min_val_a, max_val_a)
 
 
 #PLOT PARAMS
@@ -202,7 +192,7 @@ axs[0].plot(x1, lx1, "--", color = "tab:blue", linewidth = lwidth1, label = "Ast
 axs[0].plot(x2, lx2, "--", color = "tab:orange", linewidth = lwidth1, label = "Course")
 axs[0].plot(np.arange(min_val_x, max_val_x), np.arange(min_val_x, max_val_x), "-", color ='black', linewidth = lwidth2, label = "Perfect Model")
 axs[0].set_xlabel("Predictions "+r"$m\;s^{-1}$", fontsize = lab_size)
-axs[0].set_ylabel("True Value "+r"$m\;s-1$", fontsize = lab_size)
+axs[0].set_ylabel("True Value "+r"$m\;s^{-1}$", fontsize = lab_size)
 axs[0].set_box_aspect(1)
 axs[0].tick_params(axis='both', which='major', labelsize=tick_size)
 axs[0].legend()
@@ -214,7 +204,7 @@ axs[1].plot(y1, ly1, "--", color = "tab:blue", linewidth = lwidth1)
 axs[1].plot(y2, ly2, "--", color = "tab:orange", linewidth = lwidth1)
 axs[1].plot(np.arange(min_val_y, max_val_y), np.arange(min_val_y, max_val_y), "-", color ='black', linewidth = lwidth2)
 axs[1].set_xlabel("Predictions "+r"$m\;s^{-1}$", fontsize = lab_size)
-axs[1].set_ylabel("True Value "+r"$m\;s-1$", fontsize = lab_size)
+axs[1].set_ylabel("True Value "+r"$m\;s^{-1}$", fontsize = lab_size)
 axs[1].set_box_aspect(1)
 axs[1].tick_params(axis='both', which='major', labelsize=tick_size)
 axs[1].set_title(r"$\dot{y}$", fontsize = title_size)
@@ -225,8 +215,48 @@ axs[2].plot(a1, la1, "--", color = "tab:blue", linewidth = lwidth1)
 axs[2].plot(a2, la2, "--", color = "tab:orange", linewidth = lwidth1)
 axs[2].plot(np.arange(min_val_a, max_val_a), np.arange(min_val_a, max_val_a), "-", color ='black', linewidth = lwidth2)
 axs[2].set_xlabel("Predictions "+r"$rad\;s^{-1}$", fontsize = lab_size)
-axs[2].set_ylabel("True Value "+r"$rad\;s-1$", fontsize = lab_size)
+axs[2].set_ylabel("True Value "+r"$rad\;s^{-1}$", fontsize = lab_size)
 axs[2].set_box_aspect(1)
 axs[2].tick_params(axis='both', which='major', labelsize=tick_size)
 axs[2].tick_params(axis="y", which='major', rotation = 90)
 axs[2].set_title(r"$\dot{\theta}$", fontsize = title_size)
+
+#METRICS
+num_digits_shown = 6
+print("Astro:")
+MSD_x1 = mean_squared_error(HVO1, output_x_velocities1, squared = False)/abs(statistics.mean(HVO1))
+MSD_y1 = mean_squared_error(VVO1, output_y_velocities1, squared = False)/abs(statistics.mean(VVO1))
+MSD_a1 = mean_squared_error(SO1, output_a_velocities1, squared = False)/abs(statistics.mean(SO1))
+print("MSE:", (str(MSD_x1))[:num_digits_shown], (str(MSD_y1))[:num_digits_shown], (str(MSD_a1))[:num_digits_shown])
+r2_x1 = r2_score(HVO1, output_x_velocities1)
+r2_y1 = r2_score(VVO1, output_y_velocities1)
+r2_a1 = r2_score(SO1, output_a_velocities1)
+print("R^2:", (str(r2_x1))[:num_digits_shown], (str(r2_y1))[:num_digits_shown], (str(r2_a1))[:num_digits_shown])
+m_x1 = abs(1 - cx1[0])
+m_y1 = abs(1 - cy1[0])
+m_a1 = abs(1 - ca1[0])
+print("m:", (str(m_x1))[:num_digits_shown], (str(m_y1))[:num_digits_shown], (str(m_a1))[:num_digits_shown])
+C_x1 = abs(0 - cx1[1])
+C_y1 = abs(0 - cy1[1])
+C_a1 = abs(0 - ca1[1])
+print("C:", (str(C_x1))[:num_digits_shown], (str(C_y1))[:num_digits_shown], (str(C_a1))[:num_digits_shown])
+
+
+print("Course:")
+MSD_x2 = mean_squared_error(HVO2, output_x_velocities2, squared = False)/abs(statistics.mean(HVO2))
+MSD_y2 = mean_squared_error(VVO2, output_y_velocities2, squared = False)/abs(statistics.mean(VVO2))
+MSD_a2 = mean_squared_error(SO2, output_a_velocities2, squared = False)/abs(statistics.mean(SO2))
+print("MSE:", (str(MSD_x2))[:num_digits_shown], (str(MSD_y2))[:num_digits_shown], (str(MSD_a2))[:num_digits_shown])
+r2_x2 = r2_score(HVO2, output_x_velocities2)
+r2_y2 = r2_score(VVO2, output_y_velocities2)
+r2_a2 = r2_score(SO2, output_a_velocities2)
+print("R^2:", (str(r2_x2))[:num_digits_shown], (str(r2_y2))[:num_digits_shown], (str(r2_a2))[:num_digits_shown])
+m_x2 = abs(1 - cx2[0])
+m_y2 = abs(1 - cy2[0])
+m_a2 = abs(1 - ca2[0])
+print("m:", (str(m_x2))[:num_digits_shown], (str(m_y2))[:num_digits_shown], (str(m_a2))[:num_digits_shown])
+C_x2 = abs(0 - cx2[1])
+C_y2 = abs(0 - cy2[1])
+C_a2 = abs(0 - ca2[1])
+print("C:", (str(C_x2))[:num_digits_shown], (str(C_y2))[:num_digits_shown], (str(C_a2))[:num_digits_shown])
+
