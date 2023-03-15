@@ -171,7 +171,7 @@ stemline1c = axs[1].stem(mu_min_course, min_val_course, linefmt = "darkgrey",  m
 stemline2c = axs[1].stem(min_val_course, mu_min_course, linefmt = "darkgrey",  markerfmt=" ", orientation = 'horizontal')
 plt.setp(stemline1c, 'linestyle', 'dashed')
 plt.setp(stemline2c, 'linestyle', 'dashed')
-axs[1].plot(mu_vals, errors_course, linewidth = line_width)
+axs[1].plot(mu_vals, errors_course, linewidth = line_width, color = "tab:orange")
 axs[1].set_title("(b)", fontsize = label_size)
 axs[1].xaxis.label.set(fontsize=label_size)
 axs[1].yaxis.label.set(fontsize=label_size)
