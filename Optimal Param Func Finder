@@ -1,0 +1,124 @@
+import math
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+import matplotlib as mpl
+plt.style.use('default')
+rc = {"font.family" : "serif", 
+      "mathtext.fontset" : "stix"}
+plt.rcParams.update(rc)
+plt.rcParams["font.serif"] = ["Times New Roman"] + plt.rcParams["font.serif"]
+COLOR = 'black'
+mpl.rcParams['text.color'] = COLOR
+mpl.rcParams['axes.labelcolor'] = COLOR
+mpl.rcParams['xtick.color'] = COLOR
+mpl.rcParams['ytick.color'] = COLOR
+
+
+#data
+data = pd.read_csv("~/Desktop/ResultsCourse.csv")
+n = len(data)
+HVI = data['HorizontalVelIn']
+VVI = data['VerticalVelIn']
+SI = data['SpinIn']
+HVO = data['HorizontalVelOut']
+VVO = data['VerticalVelOut']
+SO = data['SpinOut']
+
+degree_min = np.load("/Users/TobyCheng/Desktop/OptimalAng2.npy")
+mu_min = np.load("/Users/TobyCheng/Desktop/OptimalMu2.npy")
+e_min = np.load("/Users/TobyCheng/Desktop/OptimalE2.npy")
+vel_magnitudes = np.load("/Users/TobyCheng/Desktop/VelMags2.npy")
+vel_directions_degrees = np.load("/Users/TobyCheng/Desktop/VelDirs2.npy")
+
+ang_min = []
+for i in degree_min:
+    ang_min.append(math.radians(i))
+
+num_digits = 7
+def spear(output):
+    res0 = stats.spearmanr(HVI, output)
+    res1 = stats.spearmanr(VVI, output)
+    res2 = stats.spearmanr(SI, output)
+    res3 = stats.spearmanr(vel_magnitudes, output)
+    res4 = stats.spearmanr(vel_directions_degrees, output)
+    result0 = res0[0]
+    result1 = res1[0]
+    result2 = res2[0]
+    result3 = res3[0]
+    result4 = res4[0]
+    print((str(result0))[:num_digits], (str(result1))[:num_digits], (str(result2))[:num_digits], (str(result3))[:num_digits], (str(result4))[:num_digits])
+#spear(ang_min)
+#spear(mu_min)
+#spear(e_min)
+
+
+vel_directions = []
+for i in vel_directions_degrees:
+    vel_directions.append(math.radians(i))
+
+
+#astro
+HVI_asc = sorted(HVI)
+SI_asc = sorted(SI)
+c0_1 = np.polyfit(HVI, e_min, 1)
+c0_2 = np.polyfit(HVI, e_min, 2)
+e_line_1 = []
+e_line_2 = []
+for i in HVI_asc:
+    e_line_1.append(((c0_1[0])*i) + (c0_1[1])) 
+    e_line_2.append(((c0_2[0])*i*i) + ((c0_2[1])*i) + (c0_2[2])) 
+c1_1 = np.polyfit(HVI, ang_min, 1)
+c1_2 = np.polyfit(HVI, ang_min, 2)
+ang_line_1 = []
+ang_line_2 = []
+for i in HVI_asc:
+    ang_line_1.append(((c1_1[0])*i) + (c1_1[1]))
+    ang_line_2.append(((c1_2[0])*i*i) + ((c1_2[1])*i) + (c1_2[2])) 
+c2_1 = np.polyfit(SI, mu_min, 1)
+c2_2 = np.polyfit(SI, mu_min, 2)
+mu_line_1 = []
+mu_line_2 = []
+for i in SI_asc:
+    mu_line_1.append(((c2_1[0])*i) + (c2_1[1])) 
+    mu_line_2.append(((c2_2[0])*i*i) + ((c2_2[1])*i) + (c2_2[2])) 
+def runges(num_poly, lwidth):
+    c_runge = np.polyfit(HVI, ang_min, num_poly)
+    runge_line = []
+    for i in HVI_asc:
+        ans = 0
+        for j in range(0, num_poly+1):
+           term = c_runge[j] * (i ** (num_poly - j)) 
+           ans += term
+        runge_line.append(ans)    
+    axs[0].plot(HVI_asc, runge_line, label = r'$f^*,deg(f(x))=150$', linewidth = lwidth, color = 'green')
+
+
+label_size = 9
+lwidth = 2
+#plots
+fig, axs = plt.subplots(1,3,figsize=(15, 15))
+fig.suptitle("Optimal Parameters against Input Variables")
+axs[0].scatter(HVI, ang_min, marker = '3', color = 'silver')
+axs[0].plot(HVI_asc, ang_line_1, label = r'$f^*,deg(f(x))=1$', linewidth = lwidth, color = 'red')
+axs[0].plot(HVI_asc, ang_line_2, label = r'$f^*,deg(f(x))=2$', linewidth = lwidth, color = 'blue')
+axs[0].set(xlabel="Horizontal Velocity In (m/s)", ylabel="Optimal Value of "+r"$\theta_c$ (rad)")
+axs[0].tick_params(axis='both', which='major', labelsize=label_size)
+axs[0].set_box_aspect(1)
+runges(150, lwidth)
+axs[0].legend()
+
+axs[1].scatter(SI, mu_min, marker = '3', color = 'silver')
+axs[1].plot(SI_asc, mu_line_1, linewidth = lwidth, color = 'red')
+axs[1].plot(SI_asc, mu_line_2, linewidth = lwidth, color = 'blue')
+axs[1].set(xlabel="Spin In (rad/s)", ylabel="Optimal Value of "+r"$\mu$")
+axs[1].tick_params(axis='both', which='major', labelsize=label_size)
+axs[1].set_box_aspect(1)
+
+axs[2].scatter(HVI, e_min, marker = '3', color = 'silver')
+axs[2].plot(HVI_asc, e_line_1, linewidth = lwidth, color = 'red')
+axs[2].plot(HVI_asc, e_line_2, linewidth = lwidth, color = 'blue')
+axs[2].set(xlabel="Horizontal Velocity In (m/s)", ylabel="Optimal Value of "+r"$e$")
+axs[2].tick_params(axis='both', which='major', labelsize=label_size)
+axs[2].set_box_aspect(1)
