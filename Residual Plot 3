@@ -136,9 +136,9 @@ else:
         iw = SI1[i]
         vel = (math.sqrt((HVI1[i]*HVI1[i]) + (VVI1[i]*VVI1[i])))
         vel_dir = math.atan(VVI1[i]/HVI1[i])
-        e = (-0.33281765748235626*vel_dir) + 0.09744476624438424
-        theta = (0.29847962385686955*vel_dir) + 0.5188895708927335
-        mu = (0.00022760731301503694*iw) + (0.1260000378769747)
+        theta = 0.29847*vel_dir + 0.51888
+        e = -0.3328*vel_dir+ 0.09744
+        mu = 0.171
         #convert
         ixdash = (ix * math.cos(theta)) - (abs(iy) * math.sin(theta))
         iydash = (ix * math.sin(theta)) + (abs(iy) * math.cos(theta))
@@ -179,9 +179,9 @@ else:
         vel_dir = math.atan(VVI2[i]/HVI2[i])
         
         
-        theta = (0.01560616288916603*ix) + (0.05221079717514938)
-        e = (0.00023372399143813488*ix*ix) - (0.017194788783811303*ix) + (0.3614621220461849)
-        mu = 0.28
+        theta = 0.01560*ix + 0.05221
+        mu = 0.293
+        e = -0.0092*ix + 0.30953
         
         #convert
         ixdash = (ix * math.cos(theta)) - (abs(iy) * math.sin(theta))
@@ -320,3 +320,4 @@ C_x2 = abs(0 - cx2[1])
 C_y2 = abs(0 - cy2[1])
 C_a2 = abs(0 - ca2[1])
 print("C:", (str(C_x2))[:num_digits_shown], (str(C_y2))[:num_digits_shown], (str(C_a2))[:num_digits_shown])
+
