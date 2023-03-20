@@ -82,7 +82,8 @@ for i in SI_asc:
     mu_line_2.append(((c2_2[0])*i*i) + ((c2_2[1])*i) + (c2_2[2])) 
 
 
-label_size = 12
+label_size = 13
+font_size = 15
 lwidth = 1.2
 #plots
 fig, axs = plt.subplots(1,3,figsize=(15, 15))
@@ -90,23 +91,30 @@ fig.suptitle("Optimal Parameters against Input Variables")
 axs[0].scatter(vel_directions, ang_min, marker = '3', color = 'silver')
 axs[0].plot(velD_asc, ang_line_1, label = r'$f^*,\;deg(f(x))=1$', linewidth = lwidth, color = 'red')
 axs[0].plot(velD_asc, ang_line_2, label = r'$f^*,\;deg(f(x))=2$', linewidth = lwidth, color = 'blue')
-axs[0].set(xlabel="Direction of Velocity In (rad)", ylabel="Optimal Value of "+r"$\theta_c$ (rad)")
+axs[0].set_xlabel("Direction of Velocity In " + r"$(rad)$", fontsize = font_size)
+axs[0].set_ylabel("Optimal Value of "+r"$\theta_c\;$" + r"$(rad)$", fontsize = font_size)
 axs[0].tick_params(axis='both', which='major', labelsize=label_size)
+axs[0].tick_params(axis="y", which = "major", rotation = 70)
 axs[0].set_box_aspect(1)
 axs[0].legend()
 
 axs[1].scatter(SI, mu_min, marker = '3', color = 'silver')
 axs[1].plot(SI_asc, mu_line_1, linewidth = lwidth, color = 'red')
 axs[1].plot(SI_asc, mu_line_2, linewidth = lwidth, color = 'blue')
-axs[1].set(xlabel="Spin In (rad/s)", ylabel="Optimal Value of "+r"$\mu$")
+axs[1].set_xlabel("Spin In " + r"$(rad\;s^{-1})$", fontsize = font_size)
+axs[1].set_ylabel("Optimal Value of "+r"$\mu$", fontsize = font_size)
 axs[1].tick_params(axis='both', which='major', labelsize=label_size)
+axs[1].tick_params(axis="y", which = "major", rotation = 70)
+#axs[1].set_yticks([0, 0.1, 0.2, 0.3, 0.4])
 axs[1].set_box_aspect(1)
 
 axs[2].scatter(vel_directions, e_min, marker = '3', color = 'silver')
 axs[2].plot(velD_asc, e_line_1, linewidth = lwidth, color = 'red')
 axs[2].plot(velD_asc, e_line_2, linewidth = lwidth, color = 'blue')
-axs[2].set(xlabel="Direction of Velocity In (rad)", ylabel="Optimal Value of "+r"$e$")
+axs[2].set_xlabel("Direction of Velocity In " + r"$(rad)$", fontsize = font_size)
+axs[2].set_ylabel("Optimal Value of "+r"$e$", fontsize = font_size)
 axs[2].tick_params(axis='both', which='major', labelsize=label_size)
+axs[2].tick_params(axis="y", which = "major", rotation = 70)
 axs[2].set_box_aspect(1)
 
 
@@ -116,3 +124,4 @@ print("ang1:", c1_1[0], c1_1[1])
 print("ang2:", c1_2[0], c1_2[1], c2_2[2])
 print("mu1:", c2_1[0], c2_1[1])
 print("mu2:", c2_2[0], c2_2[1], c2_2[2])
+
