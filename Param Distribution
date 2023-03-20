@@ -39,8 +39,8 @@ mu_vals = [mu_min1,
 e_vals = [e_min1,
           e_min2]
 
-font_size = 12
-label_size = 12
+font_size = 15
+label_size = 13
 fig, axs = plt.subplots(1,3,figsize=(15, 15))
 axs[0].boxplot(ang_vals, widths = 0.5, labels = ["Astro", "Course"], showmeans = True, showfliers = False)
 axs[0].set_ylim([-1, 41])
