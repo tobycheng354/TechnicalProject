@@ -118,13 +118,13 @@ ax[2,0].tick_params(axis='both', which='major', labelsize=9)
 ax[1,0].set(ylabel=r'$\dot{y}_{out}$'+" " +r"$(m\;s^{-1})$")
 ax[1,0].tick_params(axis='both', which='major', labelsize=9)
 
-ax[0,0].set(ylabel=r'$\dot{\theta}_{out}$'+" " +r"$(rad\;s^{-1})$")
+ax[0,0].set(ylabel=r'$\omega_{out}$'+" " +r"$(rad\;s^{-1})$")
 ax[0,0].tick_params(axis='both', which='major', labelsize=9)
 
 ax[2,1].set(xlabel=r'$\dot{y}_{in}$'+" " +r"$(m\;s^{-1})$")
 ax[2,1].tick_params(axis='both', which='major', labelsize=9)
 
-ax[2,2].set(xlabel=r'$\dot{\theta}_{in}$'+" " +r"$(rad\;s^{-1})$")
+ax[2,2].set(xlabel=r'$\omega_{in}$'+" " +r"$(rad\;s^{-1})$")
 ax[2,2].tick_params(axis='both', which='major', labelsize=9)
 
 
@@ -162,4 +162,3 @@ cbar_ax2 = fig.add_axes([0.905+adj, 0.11, 0.02, 0.38])
 cbar2 = fig.colorbar(im1, cax=cbar_ax2)
 cbar2.set_label("Campaign B", rotation = 270, labelpad = 9.5)
 cbar2.set_ticks([])
-
